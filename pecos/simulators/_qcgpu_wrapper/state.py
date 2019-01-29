@@ -14,6 +14,7 @@
 #   limitations under the License.
 #  =========================================================================  #
 
+from .. import BaseSim
 
 try:
     import qcgpu
@@ -24,13 +25,19 @@ except ModuleNotFoundError:
     has_sim = False
 
 
-class State:
+class State(BaseSim):
 
-    gate_dict = bindings.gate_dict
+    a = 0
 
     def __init__(self, num_qubits):
         """
-        Initializes a quantum state/register.
+        Initializes the stabilizer state.
+
+        Args:
+            num_qubits (int): Number of qubits being represented.
+
+        Returns:
+
         """
 
         if not has_sim:
@@ -39,27 +46,9 @@ class State:
         if not isinstance(num_qubits, int):
             raise Exception('``num_qubits`` should be of type ``int.``')
 
+        super().__init__()
+
+        self.gate_dict = bindings.gate_dict
         self.num_qubits = num_qubits
 
         self.state = qcgpu.State(num_qubits)
-
-    def run_gate(self, symbol, locations, **gate_kwargs):
-        """
-
-        Args:
-            symbol:
-            locations:
-            **gate_kwargs: A dictionary specifying extra parameters for the gate.
-
-        Returns:
-
-        """
-
-        output = {}
-        for location in locations:
-            results = self.gate_dict[symbol](self.state, location, **gate_kwargs)
-
-            if results:
-                output[location] = results
-
-        return output
